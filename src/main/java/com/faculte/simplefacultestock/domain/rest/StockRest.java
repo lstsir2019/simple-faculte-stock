@@ -40,7 +40,11 @@ public class StockRest {
 
     @PostMapping("/")
     public int create(@RequestBody List<StockVo> stocks) {
+        System.out.println("*********************************SaveStock*************************");
+        System.out.println(stockConverter.toItem(stocks));
+        System.out.println("*******************************************************************");
         int res = stockService.create(stockConverter.toItem(stocks));
+        System.out.println("ressssssssssssssssssssssssssssssssssssss:" + res);
         return res;
     }
 

@@ -5,7 +5,6 @@
  */
 package com.faculte.simplefacultestock.domain.model.service.impl;
 
-
 import com.faculte.simplefacultestock.domain.bean.Magasin;
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.model.dao.StockDao;
@@ -17,7 +16,8 @@ import org.springframework.stereotype.Service;
 
 /**
  *
- * @author LENOVO
+ * @author Anas
+ *
  */
 @Service
 public class StockServiceImpl implements StockService {
@@ -35,6 +35,16 @@ public class StockServiceImpl implements StockService {
             stockDao.save(stock);
         }
         return res;
+    }
+
+    @Override
+    public int create(List<Stock> stocks) {
+        if (!valideListStocks(stocks)) {
+            return -1;
+        } else {
+            stockDao.saveAll(stocks);
+            return 1;
+        }
     }
 
     @Override
@@ -56,18 +66,9 @@ public class StockServiceImpl implements StockService {
         }
     }
 
-    @Override
-    public int create(List<Stock> stocks) {
-        if (!valideListStocks(stocks)) {
-            return -1;
-        } else {
-            stockDao.saveAll(stocks);
-            return 1;
-        }
-    }
-
-    //Methode qui permet de Valide Si un seul Stock peut s'enregister dans la base de donnees sans problem
     private int valideStock(Stock stock) {
+        //Methode qui permet de Valide Si 
+        //un seul Stock peut s'enregister au BD
         if (stock == null) {
             return -1;
         } else if (stock.getReferenceProduit() == null || stock.getReferenceProduit().isEmpty()) {
@@ -75,6 +76,7 @@ public class StockServiceImpl implements StockService {
         } else if (stock.getReferenceReception() == null || stock.getReferenceReception().isEmpty()) {
             return -3;
         } else {
+            
             Magasin magasin = magasinService.findByReference(stock.getMagasin().getReference());
             if (magasin == null) {
                 return -4;
@@ -85,12 +87,15 @@ public class StockServiceImpl implements StockService {
         }
     }
 
-    //Methode qui permet de Valide Si La Liste des Stock peut s'enregister dans la base de donnees sans problem
     private boolean valideListStocks(List<Stock> stocks) {
+        //Methode qui permet de Valide
+        //Si La Liste des Stock peut s'enregister au BD 
+        // sans problem
         int res = 0;
-        for (Stock stock : stocks) {
-            res += valideStock(stock);
-        }
+        res = stocks.stream()
+                .map((stock) -> valideStock(stock))
+                .reduce(res, Integer::sum);
+        System.out.println("ressssssssssssssssssssssssssss" + res);
         return (res == stocks.size());
     }
 
