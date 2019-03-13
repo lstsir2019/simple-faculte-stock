@@ -45,17 +45,17 @@ public class StockRest {
     }
 
     @GetMapping("/magasin/{refmagasin}/commande/{refcommande}/produit/{refproduit}")
-    public List<Stock> findStocksByMagasinAndCommandeAndProduit(@PathVariable("refmagasin") String refMagasin,@PathVariable("refcommande") String refCommande,@PathVariable("refproduit") String refProduit) {
-        return stockService.findStocksByMagasinAndCommandeAndProduit(refMagasin, refCommande, refProduit);
+    public List<StockVo> findStocksByMagasinAndCommandeAndProduit(@PathVariable("refmagasin") String refMagasin, @PathVariable("refcommande") String refCommande, @PathVariable("refproduit") String refProduit) {
+        return stockConverter.toVo(stockService.findStocksByMagasinAndCommandeAndProduit(refMagasin, refCommande, refProduit));
     }
-    
+
     @GetMapping("/commande/{refcommande}/produit/{refproduit}")
-    public List<Stock> findStocksByCommandeAndProduit(String refCommande, String refProduit) {
-        return stockService.findStocksByCommandeAndProduit(refCommande, refProduit);
+    public List<StockVo> findStocksByCommandeAndProduit(String refCommande, String refProduit) {
+        return stockConverter.toVo(stockService.findStocksByCommandeAndProduit(refCommande, refProduit));
     }
 
     @PutMapping("/magasin/{refmagasin}/reception/{refreception}/produit/{refproduit}/qtelivre/{qtelivre}")
-    public int stockLivraison(@PathVariable String refreception,@PathVariable String refmagasin,@PathVariable String refproduit,@PathVariable Integer qtelivre) {
+    public int stockLivraison(@PathVariable String refreception, @PathVariable String refmagasin, @PathVariable String refproduit, @PathVariable Integer qtelivre) {
         return stockService.stockLivraison(refreception, refmagasin, refproduit, qtelivre);
     }
 
