@@ -5,7 +5,6 @@
  */
 package com.faculte.simplefacultestock.domain.model.service;
 
-
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import java.util.List;
 
@@ -18,16 +17,19 @@ public interface StockService {
     public int create(Stock stock);
 
     public int create(List<Stock> stocks);
-    
+
     public List<Stock> findAll();
 
-    public int stockReception(String refMagasin, String refProduit, Integer newQte);
+    public int stockLivraison(String refReception, String refMagasin, String refProduit, Integer qteLivre);
 
-    public int stockLivraison(String refMagasin, String refProduit, Integer qteLivre);
-
+//    public int stockReception(String refMagasin, String refProduit, Integer newQte);
     public int stockDefected(Stock stock);
 
-    public Stock findByMagasinReferenceAndReferenceProduit(String refMagasin, String refProduit);
+    public List<Stock> findStocksByMagasinAndReceptionAndProduit(String refMagasin, String reception, String refProduit);
+
+    public List<Stock> findStocksByMagasinAndCommandeAndProduit(String refMagasin, String refCommande, String refProduit);
+
+    public List<Stock> findStocksByCommandeAndProduit(String refCommande, String refProduit);
 
     public Stock findByReference(String codeStock);
 

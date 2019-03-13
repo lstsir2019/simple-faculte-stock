@@ -25,6 +25,7 @@ public class Stock implements Serializable {
     private Long id;
     private String reference;
     private String referenceReception;
+    private String referenceCommande;
     private String referenceProduit;
     private int qte;
     private int qteDeffectueuse;
@@ -54,6 +55,14 @@ public class Stock implements Serializable {
 
     public void setReferenceReception(String referenceReception) {
         this.referenceReception = referenceReception;
+    }
+
+    public String getReferenceCommande() {
+        return referenceCommande;
+    }
+
+    public void setReferenceCommande(String referenceCommande) {
+        this.referenceCommande = referenceCommande;
     }
 
     public String getReferenceProduit() {

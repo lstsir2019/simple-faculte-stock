@@ -11,6 +11,7 @@ import com.faculte.simplefacultestock.domain.model.dao.StockDao;
 import com.faculte.simplefacultestock.domain.model.service.MagasinService;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,6 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public int create(Stock stock) {
-        //Methode valideStock return 1 Or nbr<1 (cas de errer)
         int res = valideStock(stock);
         if (valideStock(stock) > 0) {
             stockDao.save(stock);
@@ -52,20 +52,6 @@ public class StockServiceImpl implements StockService {
         return stockDao.findAll();
     }
 
-    @Override
-    public int stockReception(String refMagasin, String refProduit, Integer newQte) {
-        Stock s = findByMagasinReferenceAndReferenceProduit(refMagasin, refProduit);
-        if (s == null) {
-            return -1;
-        } else if (newQte < 0) {
-            return -2;
-        } else {
-            s.setQte(s.getQte() + newQte);
-            stockDao.save(s);
-            return 1;
-        }
-    }
-
     private int valideStock(Stock stock) {
         //Methode qui permet de Valide Si 
         //un seul Stock peut s'enregister au BD
@@ -76,7 +62,6 @@ public class StockServiceImpl implements StockService {
         } else if (stock.getReferenceReception() == null || stock.getReferenceReception().isEmpty()) {
             return -3;
         } else {
-            
             Magasin magasin = magasinService.findByReference(stock.getMagasin().getReference());
             if (magasin == null) {
                 return -4;
@@ -95,13 +80,7 @@ public class StockServiceImpl implements StockService {
         res = stocks.stream()
                 .map((stock) -> valideStock(stock))
                 .reduce(res, Integer::sum);
-        System.out.println("ressssssssssssssssssssssssssss" + res);
         return (res == stocks.size());
-    }
-
-    @Override
-    public Stock findByMagasinReferenceAndReferenceProduit(String refMagasin, String refProduit) {
-        return stockDao.findByMagasinReferenceAndReferenceProduit(refMagasin, refProduit);
     }
 
     @Override
@@ -110,25 +89,60 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public int stockLivraison(String refMagasin, String refProduit, Integer qteLivre) {
-        Stock s = findByMagasinReferenceAndReferenceProduit(refMagasin, refProduit);
-        if (s == null) {
+    public List<Stock> findStocksByCommandeAndProduit(String refCommande, String refProduit) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Stock> findStocksByMagasinAndCommandeAndProduit(String refMagasin, String refCommande, String refProduit) {
+        return stockDao.findByMagasinReferenceAndReferenceCommandeAndReferenceProduit(refMagasin, refCommande, refProduit)
+                .stream()
+                .filter(stock -> stock.getQte() > 0)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public int stockLivraison(String refReception, String refMagasin, String refProduit, Integer qteLivre) {
+        List<Stock> stocks = findStocksByMagasinAndReceptionAndProduit(refMagasin, refReception, refProduit);
+        if (stocks == null || stocks.isEmpty()) {
             return -1;
-        } else if ((s.getQte() - s.getQteDeffectueuse()) < qteLivre || qteLivre < 0) {
+        } else if (!verifierQte(stocks, qteLivre)) {
             return -2;
         } else {
-            s.setQte(s.getQte() - qteLivre);
-            stockDao.save(s);
+            for (Stock stock : stocks) {
+                if (stock.getQte() > qteLivre) {
+                    stock.setQte(stock.getQte() - qteLivre);
+                    stockDao.save(stock);
+                    break;
+                } else {
+                    if (qteLivre > 0) {
+                        qteLivre = qteLivre - stock.getQte();
+                        stock.setQte(0);
+                        stockDao.save(stock);
+                    } else {
+                        break;
+                    }
+                }
+            }
             return 1;
         }
     }
 
+    private boolean verifierQte(List<Stock> stocks, Integer qteLivre) {
+        Integer qteTotale = 0; //= stocks.forEach(i->i)
+        qteTotale = stocks.stream()
+                .map((stock) -> stock.getQte())
+                .reduce(qteTotale, Integer::sum);
+        return qteTotale >= qteLivre;
+    }
+
+    @Override
+    public List<Stock> findStocksByMagasinAndReceptionAndProduit(String refMagasin, String reception, String refProduit) {
+        return stockDao.findByMagasinReferenceAndReferenceReceptionAndReferenceProduit(refMagasin, reception, refProduit);
+    }
+
     @Override
     public int stockDefected(Stock stock) {
-//        Stock s = findByMagasinReferenceAndReferenceProduit(stock.getMagasin().getReference(), stock.getReferenceProduit());
-//        if (stock == null) {
-//            return -1;
-//        } else 
         if (stock.getQte() < stock.getQteDeffectueuse() || stock.getQteDeffectueuse() < 0) {
             return -2;
         } else if (stock.getSeuilAlert() < 0) {
