@@ -20,7 +20,7 @@ MagasinVo
 ```
 ## RestController 
 ```java
-   "http://localhost:4200/stock-api/stocks"
+   path="http://localhost:8040/stock-api/stocks"
 
    @GetMapping("/magasin/{refmagasin}/commande/{refcommande}/produit/{refproduit}")
    public List<Stock> findStocksByMagasinAndCommandeAndProduit(@PathVariable("refmagasin") String refMagasin,@PathVariable("refcommande") String refCommande,@PathVariable("refproduit") String refProduit);
