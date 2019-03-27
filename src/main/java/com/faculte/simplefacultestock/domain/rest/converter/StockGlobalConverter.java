@@ -55,7 +55,7 @@ public class StockGlobalConverter {
             Stock first = stocks.get(0);
             magasins.add(first.getMagasin());
             for (Stock stock : stocks) {
-                if(!magasinInList(stock.getMagasin(), magasins)){
+                if (!magasinInList(stock.getMagasin(), magasins)) {
                     magasins.add(stock.getMagasin());
                 }
             }
@@ -66,7 +66,7 @@ public class StockGlobalConverter {
     private Boolean magasinInList(Magasin magasin, List<Magasin> magasins) {
         for (Magasin mag : magasins) {
             if (mag.getReference().equals(magasin.getReference())) {
-               return true;
+                return true;
             }
         }
         return false;
