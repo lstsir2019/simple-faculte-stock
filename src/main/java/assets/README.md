@@ -8,7 +8,7 @@ StockVo:{
     "qteDeffectueuse",
     "seuilAlert",
     "MagasinVo" }
-``
+```
 StockGlobal
 ```json`
 StockGlobal {
