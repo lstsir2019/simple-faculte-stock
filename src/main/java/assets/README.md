@@ -10,7 +10,7 @@ StockVo:{
     "MagasinVo" }
 ```
 StockGlobal
-```json`
+```json
 StockGlobal {
     "referenceProduit",
     "referenceCommande",
