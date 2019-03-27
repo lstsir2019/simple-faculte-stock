@@ -8,6 +8,15 @@ StockVo:{
     "qteDeffectueuse",
     "seuilAlert",
     "MagasinVo" }
+``
+StockGlobal
+```json`
+StockGlobal {
+    "referenceProduit",
+    "referenceCommande",
+    "referenceMagasin",
+    "qte";
+}
 ```
 MagasinVo
 ```json
