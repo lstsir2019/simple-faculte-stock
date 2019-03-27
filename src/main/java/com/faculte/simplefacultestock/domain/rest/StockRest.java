@@ -8,6 +8,8 @@ package com.faculte.simplefacultestock.domain.rest;
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
 import com.faculte.simplefacultestock.domain.rest.converter.StockConverter;
+import com.faculte.simplefacultestock.domain.rest.converter.StockGlobalConverter;
+import com.faculte.simplefacultestock.domain.rest.vo.StockGlobal;
 import com.faculte.simplefacultestock.domain.rest.vo.StockVo;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class StockRest {
     private StockService stockService;
     @Autowired
     private StockConverter stockConverter;
+    @Autowired
+    private StockGlobalConverter converter;
 
     public int create(Stock stock) {
         return stockService.create(stock);
@@ -49,15 +53,23 @@ public class StockRest {
         return stockConverter.toVo(stockService.findStocksByMagasinAndCommandeAndProduit(refMagasin, refCommande, refProduit));
     }
 
-    @GetMapping("/commande/{refcommande}/produit/{refproduit}")
+/*    @GetMapping("/commande/{refcommande}/produit/{refproduit}")
     public List<StockVo> findStocksByCommandeAndProduit(String refCommande, String refProduit) {
         return stockConverter.toVo(stockService.findStocksByCommandeAndProduit(refCommande, refProduit));
     }
-
+*/
     @PutMapping("/magasin/{refmagasin}/reception/{refreception}/produit/{refproduit}/qtelivre/{qtelivre}")
     public int stockLivraison(@PathVariable String refreception, @PathVariable String refmagasin, @PathVariable String refproduit, @PathVariable Integer qtelivre) {
         return stockService.stockLivraison(refreception, refmagasin, refproduit, qtelivre);
     }
+    
+    @GetMapping("/commande/{refcommande}/produit/{refproduit}")
+    public List<StockGlobal> findByCommandeAndProduit(@PathVariable String refcommande,@PathVariable String refproduit) {
+        System.out.println(refcommande+" , "+refproduit);
+        return converter.findByCommandeAndProduit(refcommande, refproduit);
+    }
+    
+    
 
     @GetMapping("/stocks")
     public List<Stock> findAll() {
@@ -83,6 +95,14 @@ public class StockRest {
 
     public void setStockConverter(StockConverter stockConverter) {
         this.stockConverter = stockConverter;
+    }
+
+    public StockGlobalConverter getConverter() {
+        return converter;
+    }
+
+    public void setConverter(StockGlobalConverter converter) {
+        this.converter = converter;
     }
 
 }

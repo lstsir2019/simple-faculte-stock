@@ -22,6 +22,10 @@ public interface StockService {
 
     public int stockLivraison(String refReception, String refMagasin, String refProduit, Integer qteLivre);
 
+    public int livraisonStockLIFO(String refMagasin, String refCommande, String refProduit, Integer qteLivre);
+
+    public int livraisonStockFIFO(String refMagasin, String refCommande, String refProduit, Integer qteLivre);
+
 //    public int stockReception(String refMagasin, String refProduit, Integer newQte);
     public int stockDefected(Stock stock);
 

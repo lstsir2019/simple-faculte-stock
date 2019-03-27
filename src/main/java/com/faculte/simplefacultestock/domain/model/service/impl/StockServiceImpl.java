@@ -90,7 +90,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public List<Stock> findStocksByCommandeAndProduit(String refCommande, String refProduit) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return stockDao.findByReferenceCommandeAndReferenceProduit(refCommande, refProduit);
     }
 
     @Override
@@ -140,6 +140,38 @@ public class StockServiceImpl implements StockService {
     public List<Stock> findStocksByMagasinAndReceptionAndProduit(String refMagasin, String reception, String refProduit) {
         return stockDao.findByMagasinReferenceAndReferenceReceptionAndReferenceProduit(refMagasin, reception, refProduit);
     }
+    
+  @Override
+    public int livraisonStockLIFO(String refMagasin, String refCommande, String refProduit, Integer qteLivre) {
+        List<Stock> stocks = findStocksByCommandeAndProduit(refCommande, refProduit);
+        if (stocks == null || stocks.isEmpty()) {
+            return -1;
+        } else if (!verifierQte(stocks, qteLivre)) {
+            return -2;
+        } else {
+            for (Stock stock : stocks) {
+                if (stock.getQte() > qteLivre) {
+                    stock.setQte(stock.getQte() - qteLivre);
+                    stockDao.save(stock);
+                    break;
+                } else {
+                    if (qteLivre > 0) {
+                        qteLivre = qteLivre - stock.getQte();
+                        stock.setQte(0);
+                        stockDao.save(stock);
+                    } else {
+                        break;
+                    }
+                }
+            }
+            return 1;
+        }
+    }
+
+    @Override
+    public int livraisonStockFIFO(String refMagasin, String refCommande, String refProduit, Integer qteLivre) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
     @Override
     public int stockDefected(Stock stock) {
@@ -171,5 +203,6 @@ public class StockServiceImpl implements StockService {
     public void setMagasinService(MagasinService magasinService) {
         this.magasinService = magasinService;
     }
+
 
 }
