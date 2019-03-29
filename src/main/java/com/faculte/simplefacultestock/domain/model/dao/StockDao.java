@@ -18,10 +18,15 @@ import org.springframework.stereotype.Repository;
 public interface StockDao extends JpaRepository<Stock, Long> {
 
     public Stock findByReference(String reference);
-    
+
     public List<Stock> findByMagasinReferenceAndReferenceCommandeAndReferenceProduit(String refMagasin, String refCommande, String refProduit);
 
     public List<Stock> findByMagasinReferenceAndReferenceReceptionAndReferenceProduit(String refMagasin, String refReception, String refProduit);
 
+    public List<Stock> findByReferenceCommandeAndReferenceProduitOrderByDateReceptionDesc(String refCommande, String refProduit);
+
+    public List<Stock> findByReferenceCommandeAndReferenceProduitOrderByDateReceptionAsc(String refCommande, String refProduit);
+
     public List<Stock> findByReferenceCommandeAndReferenceProduit(String refCommande, String refProduit);
+
 }

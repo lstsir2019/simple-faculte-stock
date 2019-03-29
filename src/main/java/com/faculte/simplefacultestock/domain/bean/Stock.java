@@ -6,11 +6,13 @@
 package com.faculte.simplefacultestock.domain.bean;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
 
 /**
  *
@@ -25,6 +27,8 @@ public class Stock implements Serializable {
     private Long id;
     private String reference;
     private String referenceReception;
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date dateReception;
     private String referenceCommande;
     private String referenceProduit;
     private int qte;
@@ -55,6 +59,14 @@ public class Stock implements Serializable {
 
     public void setReferenceReception(String referenceReception) {
         this.referenceReception = referenceReception;
+    }
+
+    public Date getDateReception() {
+        return dateReception;
+    }
+
+    public void setDateReception(Date dateReception) {
+        this.dateReception = dateReception;
     }
 
     public String getReferenceCommande() {
@@ -115,7 +127,7 @@ public class Stock implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        // Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Stock)) {
             return false;
         }

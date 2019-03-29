@@ -14,6 +14,7 @@ public class StockVo {
     private String reference;
     private String referenceReception;
     private String referenceProduit;
+    private String dateReception;
     private String referenceCommande;
     private String qte;
     private String qteDeffectueuse;
@@ -37,6 +38,14 @@ public class StockVo {
 
     public void setReferenceReception(String referenceReception) {
         this.referenceReception = referenceReception;
+    }
+
+    public String getDateReception() {
+        return dateReception;
+    }
+
+    public void setDateReception(String dateReception) {
+        this.dateReception = dateReception;
     }
 
     public String getReferenceCommande() {

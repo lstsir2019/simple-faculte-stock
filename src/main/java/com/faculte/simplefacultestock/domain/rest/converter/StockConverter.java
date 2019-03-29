@@ -5,11 +5,13 @@
  */
 package com.faculte.simplefacultestock.domain.rest.converter;
 
+import com.faculte.simplefacultestock.commun.util.DateUtil;
 import com.faculte.simplefacultestock.commun.util.NumberUtil;
 import com.faculte.simplefacultestock.domain.bean.Magasin;
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.rest.vo.MagasinVo;
 import com.faculte.simplefacultestock.domain.rest.vo.StockVo;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,7 @@ public class StockConverter implements AbstractConverter<Stock, StockVo> {
         } else {
             Stock item = new Stock();
             item.setReferenceReception(vo.getReferenceReception());
+            item.setDateReception(DateUtil.parseDate(vo.getDateReception()));
             item.setReferenceCommande(vo.getReferenceCommande());
             item.setReferenceProduit(vo.getReferenceProduit());
             item.setMagasin(magasinConverter.toItem(vo.getMagasinVo()));
@@ -47,7 +50,8 @@ public class StockConverter implements AbstractConverter<Stock, StockVo> {
         } else {
             StockVo vo = new StockVo();
             vo.setReferenceReception(item.getReferenceReception());
-            vo.setReferenceProduit(vo.getReferenceProduit());
+            vo.setDateReception(DateUtil.formateDate(item.getDateReception()));
+            vo.setReferenceProduit(item.getReferenceProduit());
             vo.setReferenceCommande(item.getReferenceCommande());
             vo.setMagasinVo(magasinConverter.toVo(item.getMagasin()));
             vo.setQte(NumberUtil.toString(item.getQte()));

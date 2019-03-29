@@ -10,7 +10,6 @@ import com.faculte.simplefacultestock.domain.bean.Magasin;
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
 import com.faculte.simplefacultestock.domain.rest.vo.StockGlobal;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

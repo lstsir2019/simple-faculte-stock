@@ -33,7 +33,7 @@ public class DateUtil {
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             return (simpleDateFormat.parse(date));
-        } catch (ParseException e) {
+        } catch (Exception e) {
             return null;
         }
     }

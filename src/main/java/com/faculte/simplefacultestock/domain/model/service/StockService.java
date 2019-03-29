@@ -20,14 +20,12 @@ public interface StockService {
 
     public List<Stock> findAll();
 
-    public int stockLivraison(String refReception, String refMagasin, String refProduit, Integer qteLivre);
-
-    public int livraisonStockLIFO(String refMagasin, String refCommande, String refProduit, Integer qteLivre);
-
-    public int livraisonStockFIFO(String refMagasin, String refCommande, String refProduit, Integer qteLivre);
-
+    public int LivraisonStockUnique(String refReception, String refMagasin, String refProduit, Integer qteLivre);
 //    public int stockReception(String refMagasin, String refProduit, Integer newQte);
+
     public int stockDefected(Stock stock);
+
+    public int livraisonStockGlobal(String refcommande, String refProduit, String strategy, Integer qteLivre);
 
     public List<Stock> findStocksByMagasinAndReceptionAndProduit(String refMagasin, String reception, String refProduit);
 
@@ -36,5 +34,7 @@ public interface StockService {
     public List<Stock> findStocksByCommandeAndProduit(String refCommande, String refProduit);
 
     public Stock findByReference(String codeStock);
+
+    public List<Stock> findStocksByCommandeAndProduitAndStrategy(String refcommande, String refProduit, String strategy);
 
 }

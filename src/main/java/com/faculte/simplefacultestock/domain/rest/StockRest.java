@@ -5,14 +5,17 @@
  */
 package com.faculte.simplefacultestock.domain.rest;
 
+import com.faculte.simplefacultestock.commun.util.NumberUtil;
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
+import com.faculte.simplefacultestock.domain.rest.converter.AbstractConverter;
 import com.faculte.simplefacultestock.domain.rest.converter.StockConverter;
 import com.faculte.simplefacultestock.domain.rest.converter.StockGlobalConverter;
 import com.faculte.simplefacultestock.domain.rest.vo.StockGlobal;
 import com.faculte.simplefacultestock.domain.rest.vo.StockVo;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +37,8 @@ public class StockRest {
     @Autowired
     private StockService stockService;
     @Autowired
-    private StockConverter stockConverter;
+    @Qualifier("stockConverter")
+    private AbstractConverter<Stock, StockVo> stockConverter;
     @Autowired
     private StockGlobalConverter converter;
 
@@ -53,27 +57,31 @@ public class StockRest {
         return stockConverter.toVo(stockService.findStocksByMagasinAndCommandeAndProduit(refMagasin, refCommande, refProduit));
     }
 
-/*    @GetMapping("/commande/{refcommande}/produit/{refproduit}")
-    public List<StockVo> findStocksByCommandeAndProduit(String refCommande, String refProduit) {
-        return stockConverter.toVo(stockService.findStocksByCommandeAndProduit(refCommande, refProduit));
+    @PutMapping("/")
+    public int stockLivraison(@RequestBody StockVo stockVo) {
+        Stock stock = stockConverter.toItem(stockVo);
+        return stockService.LivraisonStockUnique(stock.getReferenceReception(), stock.getMagasin().getReference(), stock.getReferenceProduit(), stock.getQte());
     }
-*/
-    @PutMapping("/magasin/{refmagasin}/reception/{refreception}/produit/{refproduit}/qtelivre/{qtelivre}")
-    public int stockLivraison(@PathVariable String refreception, @PathVariable String refmagasin, @PathVariable String refproduit, @PathVariable Integer qtelivre) {
-        return stockService.stockLivraison(refreception, refmagasin, refproduit, qtelivre);
-    }
-    
+
     @GetMapping("/commande/{refcommande}/produit/{refproduit}")
-    public List<StockGlobal> findByCommandeAndProduit(@PathVariable String refcommande,@PathVariable String refproduit) {
-        System.out.println(refcommande+" , "+refproduit);
+    public List<StockGlobal> findByCommandeAndProduit(@PathVariable String refcommande, @PathVariable String refproduit) {
+        System.out.println(refcommande + " , " + refproduit);
         return converter.findByCommandeAndProduit(refcommande, refproduit);
     }
-    
-    
 
-    @GetMapping("/stocks")
-    public List<Stock> findAll() {
-        return stockService.findAll();
+    @GetMapping("/commande/{refcommande}/produit/{refproduit}/strategy/{strategy}")
+    public List<StockVo> findStocksByReceptionAndProduitAndStrategy(@PathVariable String refcommande, @PathVariable String refproduit, @PathVariable String strategy) {
+        return stockConverter.toVo(stockService.findStocksByCommandeAndProduitAndStrategy(refcommande, refproduit, strategy));
+    }
+
+    @PutMapping("/stockglobal/strategy/{strategy}")
+    public int livraisonStockGlobal(@RequestBody StockGlobal stockGlobal, @PathVariable String strategy) {
+        return stockService.livraisonStockGlobal(stockGlobal.getReferenceCommande(), stockGlobal.getReferenceProduit(), strategy, NumberUtil.toInteger(stockGlobal.getQte()));
+    }
+
+    @GetMapping("/")
+    public List<StockVo> findAll() {
+        return stockConverter.toVo(stockService.findAll());
     }
 
     @PutMapping("/update")
@@ -85,12 +93,12 @@ public class StockRest {
         return stockService;
     }
 
-    public void setStockService(StockService stockService) {
-        this.stockService = stockService;
+    public AbstractConverter<Stock, StockVo> getStockConverter() {
+        return stockConverter;
     }
 
-    public StockConverter getStockConverter() {
-        return stockConverter;
+    public void setStockConverter(AbstractConverter<Stock, StockVo> stockConverter) {
+        this.stockConverter = stockConverter;
     }
 
     public void setStockConverter(StockConverter stockConverter) {

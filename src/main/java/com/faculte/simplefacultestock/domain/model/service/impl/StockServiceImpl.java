@@ -10,6 +10,8 @@ import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.model.dao.StockDao;
 import com.faculte.simplefacultestock.domain.model.service.MagasinService;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,29 +104,35 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public int stockLivraison(String refReception, String refMagasin, String refProduit, Integer qteLivre) {
+    public int LivraisonStockUnique(String refReception, String refMagasin, String refProduit, Integer qteLivre) {
         List<Stock> stocks = findStocksByMagasinAndReceptionAndProduit(refMagasin, refReception, refProduit);
-        if (stocks == null || stocks.isEmpty()) {
+        if (qteLivre == 0) {
             return -1;
-        } else if (!verifierQte(stocks, qteLivre)) {
+        } else if (stocks == null || stocks.isEmpty()) {
             return -2;
+        } else if (!verifierQte(stocks, qteLivre)) {
+            return -3;
         } else {
-            for (Stock stock : stocks) {
-                if (stock.getQte() > qteLivre) {
-                    stock.setQte(stock.getQte() - qteLivre);
+            takingFromStocks(stocks, qteLivre);
+            return 1;
+        }
+    }
+
+    private void takingFromStocks(List<Stock> stocks, Integer qteLivre) {
+        for (Stock stock : stocks) {
+            if (stock.getQte() > qteLivre) {
+                stock.setQte(stock.getQte() - qteLivre);
+                stockDao.save(stock);
+                break;
+            } else {
+                if (qteLivre > 0) {
+                    qteLivre = qteLivre - stock.getQte();
+                    stock.setQte(0);
                     stockDao.save(stock);
-                    break;
                 } else {
-                    if (qteLivre > 0) {
-                        qteLivre = qteLivre - stock.getQte();
-                        stock.setQte(0);
-                        stockDao.save(stock);
-                    } else {
-                        break;
-                    }
+                    break;
                 }
             }
-            return 1;
         }
     }
 
@@ -140,38 +148,6 @@ public class StockServiceImpl implements StockService {
     public List<Stock> findStocksByMagasinAndReceptionAndProduit(String refMagasin, String reception, String refProduit) {
         return stockDao.findByMagasinReferenceAndReferenceReceptionAndReferenceProduit(refMagasin, reception, refProduit);
     }
-    
-  @Override
-    public int livraisonStockLIFO(String refMagasin, String refCommande, String refProduit, Integer qteLivre) {
-        List<Stock> stocks = findStocksByCommandeAndProduit(refCommande, refProduit);
-        if (stocks == null || stocks.isEmpty()) {
-            return -1;
-        } else if (!verifierQte(stocks, qteLivre)) {
-            return -2;
-        } else {
-            for (Stock stock : stocks) {
-                if (stock.getQte() > qteLivre) {
-                    stock.setQte(stock.getQte() - qteLivre);
-                    stockDao.save(stock);
-                    break;
-                } else {
-                    if (qteLivre > 0) {
-                        qteLivre = qteLivre - stock.getQte();
-                        stock.setQte(0);
-                        stockDao.save(stock);
-                    } else {
-                        break;
-                    }
-                }
-            }
-            return 1;
-        }
-    }
-
-    @Override
-    public int livraisonStockFIFO(String refMagasin, String refCommande, String refProduit, Integer qteLivre) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
     public int stockDefected(Stock stock) {
@@ -185,6 +161,36 @@ public class StockServiceImpl implements StockService {
             stockDao.save(stock);
             return 1;
         }
+    }
+
+    @Override
+    public List<Stock> findStocksByCommandeAndProduitAndStrategy(String refcommande, String refProduit, String strategy) {
+        if (strategy.equalsIgnoreCase("FIFO")) {
+            return stockDao.findByReferenceCommandeAndReferenceProduitOrderByDateReceptionAsc(refcommande, refProduit);
+        } else if (strategy.equalsIgnoreCase("LIFO")) {
+            return stockDao.findByReferenceCommandeAndReferenceProduitOrderByDateReceptionDesc(refcommande, refProduit);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public int livraisonStockGlobal(String refcommande, String refProduit, String strategy, Integer qteLivre) {
+        List<Stock> stocks = findStocksByCommandeAndProduitAndStrategy(refcommande, refProduit, strategy);
+        if (stocks.isEmpty()) {
+            return -1;
+        } else if (qteTotal(stocks) < qteLivre) {
+            return -2;
+        } else {
+            takingFromStocks(stocks, qteLivre);
+            return 1;
+        }
+    }
+
+    private int qteTotal(List<Stock> stocks) {
+        return stocks.stream()
+                .mapToInt(s -> s.getQte())
+                .sum();
     }
 
     ///Getter And Setter 
@@ -203,6 +209,5 @@ public class StockServiceImpl implements StockService {
     public void setMagasinService(MagasinService magasinService) {
         this.magasinService = magasinService;
     }
-
 
 }
