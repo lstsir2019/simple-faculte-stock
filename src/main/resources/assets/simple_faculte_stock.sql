@@ -3,11 +3,14 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 13, 2019 at 01:40 PM
+-- Generation Time: Mar 30, 2019 at 01:04 AM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.3.0
 
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -37,8 +40,8 @@ CREATE TABLE `hibernate_sequence` (
 --
 
 INSERT INTO `hibernate_sequence` (`next_val`) VALUES
-(19),
-(19);
+(35),
+(35);
 
 -- --------------------------------------------------------
 
@@ -61,7 +64,8 @@ CREATE TABLE `magasin` (
 INSERT INTO `magasin` (`id`, `address`, `description`, `libelle`, `reference`) VALUES
 (1, NULL, NULL, 'magasin', 'mag-3'),
 (2, NULL, NULL, 'magasin fst', 'mag-1'),
-(3, NULL, NULL, 'magasin central', 'mag-2');
+(3, NULL, NULL, 'magasin central', 'mag-2'),
+(19, NULL, NULL, 'Big magasin', 'mag-4');
 
 -- --------------------------------------------------------
 
@@ -71,6 +75,7 @@ INSERT INTO `magasin` (`id`, `address`, `description`, `libelle`, `reference`) V
 
 CREATE TABLE `stock` (
   `id` bigint(20) NOT NULL,
+  `date_reception` date DEFAULT NULL,
   `qte` int(11) NOT NULL,
   `qte_deffectueuse` int(11) NOT NULL,
   `reference` varchar(255) DEFAULT NULL,
@@ -85,19 +90,22 @@ CREATE TABLE `stock` (
 -- Dumping data for table `stock`
 --
 
-INSERT INTO `stock` (`id`, `qte`, `qte_deffectueuse`, `reference`, `reference_commande`, `reference_produit`, `reference_reception`, `seuil_alert`, `magasin`) VALUES
-(7, 20, 0, NULL, 'com-01', 'pr-1', 'rec-2019-1', 0, 2),
-(8, 99, 0, NULL, 'com-01', 'pr-3', 'rec-2019-1', 0, 2),
-(9, 22, 0, NULL, 'com-01', 'pr-4', 'rec-2019-1', 0, 2),
-(10, 15, 0, NULL, 'com-01', 'pr-1', 'rec-2019-2', 0, 3),
-(11, 99, 0, NULL, 'com-01', 'pr-3', 'rec-2019-2', 0, 1),
-(12, 10, 0, NULL, 'com-01', 'pr-4', 'rec-2019-2', 0, 2),
-(13, 15, 0, NULL, 'com-01', 'pr-1', 'rec-2019-3', 0, 2),
-(14, 14, 0, NULL, 'com-01', 'pr-3', 'rec-2019-3', 0, 1),
-(15, 10, 0, NULL, 'com-01', 'pr-4', 'rec-2019-3', 0, 2),
-(16, 1, 0, NULL, 'com-02', 'pr-4', 'rec-2019-5', 0, 2),
-(17, 1, 0, NULL, 'com-02', 'pr-1', 'rec-2019-5', 0, 1),
-(18, 1, 0, NULL, 'com-02', 'pr-4', 'rec-2019-5', 0, 2);
+INSERT INTO `stock` (`id`, `date_reception`, `qte`, `qte_deffectueuse`, `reference`, `reference_commande`, `reference_produit`, `reference_reception`, `seuil_alert`, `magasin`) VALUES
+(20, '2019-08-20', 1, 0, NULL, 'com-02', 'pr-4', 'rec-2019-1', 0, 2),
+(21, '2019-08-20', 1, 0, NULL, 'com-02', 'pr-1', 'rec-2019-1', 0, 1),
+(22, '2019-08-20', 1, 0, NULL, 'com-02', 'pr-4', 'rec-2019-1', 0, 2),
+(23, '2019-08-20', 3, 0, NULL, 'com-01', 'pr-5', 'rec-2019-2', 0, 2),
+(24, '2019-08-20', 14, 0, NULL, 'com-01', 'pr-6', 'rec-2019-2', 0, 1),
+(25, '2019-08-20', 2, 0, NULL, 'com-01', 'pr-4', 'rec-2019-2', 0, 19),
+(26, '2019-01-29', 12, 0, NULL, 'com-02', 'pr-2', 'rec-2019-3', 0, 2),
+(27, '2019-01-29', 0, 0, NULL, 'com-02', 'pr-1', 'rec-2019-3', 0, 3),
+(28, '2019-01-29', 6, 0, NULL, 'com-02', 'pr-4', 'rec-2019-3', 0, 19),
+(29, '2019-01-29', 12, 0, NULL, 'com-02', 'pr-2', 'rec-2019-4', 0, 2),
+(30, '2019-01-29', 0, 0, NULL, 'com-02', 'pr-1', 'rec-2019-4', 0, 3),
+(31, '2019-01-29', 6, 0, NULL, 'com-02', 'pr-4', 'rec-2019-4', 0, 19),
+(32, '2019-02-23', 9, 0, NULL, 'com-03', 'pr-1', 'rec-2019-5', 0, 3),
+(33, '2019-02-23', 14, 0, NULL, 'com-03', 'pr-3', 'rec-2019-5', 0, 2),
+(34, '2019-02-23', 26, 0, NULL, 'com-03', 'pr-5', 'rec-2019-5', 0, 19);
 
 --
 -- Indexes for dumped tables
@@ -115,6 +123,8 @@ ALTER TABLE `magasin`
 ALTER TABLE `stock`
   ADD PRIMARY KEY (`id`),
   ADD KEY `FKn1wvgg3tux8yqes0unb34kkt` (`magasin`);
+SET FOREIGN_KEY_CHECKS=1;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
