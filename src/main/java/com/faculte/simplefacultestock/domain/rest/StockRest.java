@@ -59,7 +59,7 @@ public class StockRest {
         return stockConverter.toVo(stockService.findStocksByMagasinAndCommandeAndProduit(refMagasin, refCommande, refProduit));
     }
 
-    @GetMapping("/search/")
+    @GetMapping("/search")
     public List<StockVo> findByCriteria(@RequestBody StockVo stockVo) {
         return stockConverter.toVo(stockService.findByCriteria(stockVo.getReferenceReception(), stockVo.getReferenceCommande(), DateUtil.parseDate(stockVo.getDateMin()), DateUtil.parseDate(stockVo.getDateMax())));
     }

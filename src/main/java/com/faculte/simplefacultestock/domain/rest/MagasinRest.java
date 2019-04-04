@@ -33,7 +33,7 @@ public class MagasinRest {
         return magasinService.create(magasin);
     }
 
-    @GetMapping("/magasins")
+    @GetMapping("/")
     public List<Magasin> findAll() {
         return magasinService.findAll();
     }
