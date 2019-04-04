@@ -5,6 +5,7 @@
  */
 package com.faculte.simplefacultestock.domain.rest;
 
+import com.faculte.simplefacultestock.commun.util.DateUtil;
 import com.faculte.simplefacultestock.commun.util.NumberUtil;
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
@@ -13,6 +14,7 @@ import com.faculte.simplefacultestock.domain.rest.converter.StockConverter;
 import com.faculte.simplefacultestock.domain.rest.converter.StockGlobalConverter;
 import com.faculte.simplefacultestock.domain.rest.vo.StockGlobal;
 import com.faculte.simplefacultestock.domain.rest.vo.StockVo;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -55,6 +57,11 @@ public class StockRest {
     @GetMapping("/magasin/{refmagasin}/commande/{refcommande}/produit/{refproduit}")
     public List<StockVo> findStocksByMagasinAndCommandeAndProduit(@PathVariable("refmagasin") String refMagasin, @PathVariable("refcommande") String refCommande, @PathVariable("refproduit") String refProduit) {
         return stockConverter.toVo(stockService.findStocksByMagasinAndCommandeAndProduit(refMagasin, refCommande, refProduit));
+    }
+
+    @GetMapping("/search/")
+    public List<StockVo> findByCriteria(@RequestBody StockVo stockVo) {
+        return stockConverter.toVo(stockService.findByCriteria(stockVo.getReferenceReception(), stockVo.getReferenceCommande(), DateUtil.parseDate(stockVo.getDateMin()), DateUtil.parseDate(stockVo.getDateMax())));
     }
 
     @PutMapping("/")

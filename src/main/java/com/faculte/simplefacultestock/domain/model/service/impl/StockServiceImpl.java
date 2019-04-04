@@ -8,10 +8,12 @@ package com.faculte.simplefacultestock.domain.model.service.impl;
 import com.faculte.simplefacultestock.domain.bean.Magasin;
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.model.dao.StockDao;
+import com.faculte.simplefacultestock.domain.model.dao.StockSearch;
 import com.faculte.simplefacultestock.domain.model.service.MagasinService;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,8 @@ public class StockServiceImpl implements StockService {
     private StockDao stockDao;
     @Autowired
     private MagasinService magasinService;
-
+    @Autowired
+    private StockSearch stockSearch;
     @Override
     public int create(Stock stock) {
         int res = valideStock(stock);
@@ -52,6 +55,11 @@ public class StockServiceImpl implements StockService {
     @Override
     public List<Stock> findAll() {
         return stockDao.findAll();
+    }
+
+    @Override
+    public List<Stock> findByCriteria(String reception, String commande, Date dateMin, Date dateMax) {
+        return stockSearch.findByCriteria(reception, commande, dateMin, dateMax);
     }
 
     private int valideStock(Stock stock) {
@@ -165,6 +173,12 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public List<Stock> findStocksByCommandeAndProduitAndStrategy(String refcommande, String refProduit, String strategy) {
+        return findStocksByCommandeProduitStrategy(refcommande, refProduit, strategy).stream()
+                .filter(s -> s.getQte() > 0)
+                .collect(Collectors.toList());
+    }
+
+    private List<Stock> findStocksByCommandeProduitStrategy(String refcommande, String refProduit, String strategy) {
         if (strategy.equalsIgnoreCase("FIFO")) {
             return stockDao.findByReferenceCommandeAndReferenceProduitOrderByDateReceptionAsc(refcommande, refProduit);
         } else if (strategy.equalsIgnoreCase("LIFO")) {
@@ -186,6 +200,12 @@ public class StockServiceImpl implements StockService {
             return 1;
         }
     }
+
+    @Override
+    public int getStockBilan(String refCommande, String refProduit) {
+        return qteTotal(findStocksByCommandeAndProduit(refCommande, refProduit));
+    }
+    
 
     private int qteTotal(List<Stock> stocks) {
         return stocks.stream()

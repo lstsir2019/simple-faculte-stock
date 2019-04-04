@@ -6,7 +6,9 @@
 package com.faculte.simplefacultestock.domain.model.service;
 
 import com.faculte.simplefacultestock.domain.bean.Stock;
+import java.util.Date;
 import java.util.List;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  *
@@ -23,6 +25,8 @@ public interface StockService {
     public int LivraisonStockUnique(String refReception, String refMagasin, String refProduit, Integer qteLivre);
 //    public int stockReception(String refMagasin, String refProduit, Integer newQte);
 
+    public List<Stock> findByCriteria(String reception, String commande, Date dateMin, Date dateMax);
+    
     public int stockDefected(Stock stock);
 
     public int livraisonStockGlobal(String refcommande, String refProduit, String strategy, Integer qteLivre);
@@ -37,4 +41,5 @@ public interface StockService {
 
     public List<Stock> findStocksByCommandeAndProduitAndStrategy(String refcommande, String refProduit, String strategy);
 
+    public int getStockBilan(String refCommande, String refProduit);
 }

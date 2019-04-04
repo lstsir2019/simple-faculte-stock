@@ -19,6 +19,8 @@ public class StockVo {
     private String qte;
     private String qteDeffectueuse;
     private String seuilAlert;
+    private String dateMin;
+    private String dateMax;
     private MagasinVo magasinVo;
 
     public StockVo() {
@@ -70,6 +72,22 @@ public class StockVo {
 
     public void setQte(String qte) {
         this.qte = qte;
+    }
+
+    public String getDateMin() {
+        return dateMin;
+    }
+
+    public void setDateMin(String dateMin) {
+        this.dateMin = dateMin;
+    }
+
+    public String getDateMax() {
+        return dateMax;
+    }
+
+    public void setDateMax(String dateMax) {
+        this.dateMax = dateMax;
     }
 
     public String getQteDeffectueuse() {
