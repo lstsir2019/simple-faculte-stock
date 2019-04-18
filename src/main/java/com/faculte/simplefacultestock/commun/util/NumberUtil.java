@@ -59,6 +59,14 @@ public class NumberUtil {
         }
     }
 
+    public static String toString(Double value) {
+        if (value == null) {
+            return CHAINE_VIDE;
+        } else {
+            return String.valueOf(value);
+        }
+    }
+
     public static String toString(BigDecimal value) {
         if (value == null) {
             return CHAINE_VIDE;

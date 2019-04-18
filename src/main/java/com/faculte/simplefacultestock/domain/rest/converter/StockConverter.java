@@ -38,9 +38,9 @@ public class StockConverter implements AbstractConverter<Stock, StockVo> {
             item.setReferenceCommande(vo.getReferenceCommande());
             item.setReferenceProduit(vo.getReferenceProduit());
             item.setMagasin(magasinConverter.toItem(vo.getMagasinVo()));
-            item.setQte(NumberUtil.toInteger(vo.getQte()));
-            item.setQteDeffectueuse(NumberUtil.toInteger(vo.getQteDeffectueuse()));
-            item.setSeuilAlert(NumberUtil.toInteger(vo.getSeuilAlert()));
+            item.setQte(NumberUtil.toDouble(vo.getQte()));
+            item.setQteDeffectueuse(NumberUtil.toDouble(vo.getQteDeffectueuse()));
+            item.setSeuilAlert(NumberUtil.toDouble(vo.getSeuilAlert()));
             item.setId(NumberUtil.toLong(vo.getId()));
             return item;
         }

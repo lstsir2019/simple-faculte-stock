@@ -3,23 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.faculte.simplefacultestock.domain.model.service.dto;
+package com.faculte.simplefacultestock.domain.rest.vo;
 
 /**
  *
  * @author Anas
  */
-public class StockGlobalDTO {
+public class StockGlobal {
 
     private String referenceCommande;
     private String referenceProduit;
     private String referenceMagasin;
-    private Long qte;
+    private Double qte;
 
-    public StockGlobalDTO() {
+    public StockGlobal() {
     }
 
-    public StockGlobalDTO(String referenceCommande, String referenceProduit, String referenceMagasin, Long qte) {
+    public StockGlobal(String referenceCommande, String referenceProduit, String referenceMagasin, Double qte) {
         this.referenceCommande = referenceCommande;
         this.referenceProduit = referenceProduit;
         this.referenceMagasin = referenceMagasin;
@@ -50,11 +50,11 @@ public class StockGlobalDTO {
         this.referenceMagasin = referenceMagasin;
     }
 
-    public Long getQte() {
+    public Double getQte() {
         return qte;
     }
 
-    public void setQte(Long qte) {
+    public void setQte(Double qte) {
         this.qte = qte;
     }
 
@@ -63,5 +63,4 @@ public class StockGlobalDTO {
         return "StockGlobalDTO{" + "referenceCommande=" + referenceCommande + ", referenceProduit=" + referenceProduit + ", referenceMagasin=" + referenceMagasin + ", qte=" + qte + '}';
     }
 
-    
 }

@@ -11,7 +11,8 @@ import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.model.dao.StockDao;
 import com.faculte.simplefacultestock.domain.model.service.MagasinService;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
-import com.faculte.simplefacultestock.domain.model.service.dto.StockGlobalDTO;
+import com.faculte.simplefacultestock.domain.rest.vo.StockGlobal;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,10 +63,10 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public List<Stock> findByCriteria(String reception, String commande, Date dateMin, Date dateMax) {
-        return entityManager.createQuery(findByCriteriaCreateQuery(reception, commande, dateMin, dateMax)).getResultList();
+        return entityManager.createQuery(constructQuery(reception, commande, dateMin, dateMax)).getResultList();
     }
 
-    private String findByCriteriaCreateQuery(String reception, String commande, Date dateMin, Date dateMax) {
+    private String constructQuery(String reception, String commande, Date dateMin, Date dateMax) {
         String query = "SELECT s FROM Stock s where 1=1 ";
         query += SearchUtil.addConstraint("s", "referenceReception", "LIKE", reception);
         query += SearchUtil.addConstraint("s", "referenceCommande", "LIKE", commande);
@@ -104,10 +105,10 @@ public class StockServiceImpl implements StockService {
         return (res == stocks.size());
     }
 
-    @Override
-    public Stock findByReference(String reference) {
-        return stockDao.findByReference(reference);
-    }
+//    @Override
+//    public Stock findByReference(String reference) {
+//        return stockDao.findByReference(reference);
+//    }
 
     @Override
     public List<Stock> findStocksByCommandeAndProduit(String refCommande, String refProduit) {
@@ -123,7 +124,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public int LivraisonStockUnique(String refReception, String refMagasin, String refProduit, Integer qteLivre) {
+    public int LivraisonStockUnique(String refReception, String refMagasin, String refProduit, Double qteLivre) {
         List<Stock> stocks = findStocksByMagasinAndReceptionAndProduit(refMagasin, refReception, refProduit);
         if (qteLivre == 0) {
             return -1;
@@ -137,7 +138,7 @@ public class StockServiceImpl implements StockService {
         }
     }
 
-    private void takingFromStocks(List<Stock> stocks, Integer qteLivre) {
+    private void takingFromStocks(List<Stock> stocks, Double qteLivre) {
         for (Stock stock : stocks) {
             if (stock.getQte() > qteLivre) {
                 stock.setQte(stock.getQte() - qteLivre);
@@ -146,7 +147,7 @@ public class StockServiceImpl implements StockService {
             } else {
                 if (qteLivre > 0) {
                     qteLivre = qteLivre - stock.getQte();
-                    stock.setQte(0);
+                    stock.setQte(0D);
                     stockDao.save(stock);
                 } else {
                     break;
@@ -155,11 +156,11 @@ public class StockServiceImpl implements StockService {
         }
     }
 
-    private boolean verifierQte(List<Stock> stocks, Integer qteLivre) {
-        Integer qteTotale = 0; //= stocks.forEach(i->i)
+    private boolean verifierQte(List<Stock> stocks, Double qteLivre) {
+        Double qteTotale = 0D; //= stocks.forEach(i->i)
         qteTotale = stocks.stream()
                 .map((stock) -> stock.getQte())
-                .reduce(qteTotale, Integer::sum);
+                .reduce(qteTotale, Double::sum);
         return qteTotale >= qteLivre;
     }
 
@@ -202,7 +203,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public int livraisonStockGlobal(String refcommande, String refProduit, String strategy, Integer qteLivre) {
+    public int livraisonStockGlobal(String refcommande, String refProduit, String strategy, Double qteLivre) {
         List<Stock> stocks = findStocksByCommandeAndProduitAndStrategy(refcommande, refProduit, strategy);
         if (stocks.isEmpty()) {
             return -1;
@@ -215,23 +216,23 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public List<StockGlobalDTO> findAllStockGlobal() {
+    public List<StockGlobal> findAllStockGlobal() {
         return stockDao.findAllByCommande();
     }
 
     @Override
-    public List<StockGlobalDTO> findStockGlobalByCommandeAndProduit(String refCommande, String refProduit) {
+    public List<StockGlobal> findStockGlobalByCommandeAndProduit(String refCommande, String refProduit) {
         return stockDao.findStockGlobalByCommandeAndProduit(refCommande, refProduit);
     }
 
     @Override
-    public int getStockBilan(String refCommande, String refProduit) {
+    public Double getStockBilan(String refCommande, String refProduit) {
         return qteTotal(findStocksByCommandeAndProduit(refCommande, refProduit));
     }
 
-    private int qteTotal(List<Stock> stocks) {
+    private Double qteTotal(List<Stock> stocks) {
         return stocks.stream()
-                .mapToInt(s -> s.getQte())
+                .mapToDouble(s -> s.getQte())
                 .sum();
     }
 

@@ -10,7 +10,7 @@ import com.faculte.simplefacultestock.commun.util.NumberUtil;
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.model.dao.StockDao;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
-import com.faculte.simplefacultestock.domain.model.service.dto.StockGlobalDTO;
+import com.faculte.simplefacultestock.domain.rest.vo.StockGlobal;
 import com.faculte.simplefacultestock.domain.rest.converter.AbstractConverter;
 import com.faculte.simplefacultestock.domain.rest.converter.StockConverter;
 import com.faculte.simplefacultestock.domain.rest.converter.StockGlobalConverter;
@@ -44,7 +44,7 @@ public class StockRest {
     private AbstractConverter<Stock, StockVo> stockConverter;
     @Autowired
     @Qualifier("stockGlobalConverter")
-    private AbstractConverter<StockGlobalDTO, StockGlobalVo> stockGlobalConverter;
+    private AbstractConverter<StockGlobal, StockGlobalVo> stockGlobalConverter;
 
     public int create(Stock stock) {
         return stockService.create(stock);
@@ -98,7 +98,7 @@ public class StockRest {
 
     @PutMapping("/stockglobal/strategy/{strategy}")
     public int livraisonStockGlobal(@RequestBody StockGlobalVo stockGlobal, @PathVariable String strategy) {
-        return stockService.livraisonStockGlobal(stockGlobal.getReferenceCommande(), stockGlobal.getReferenceProduit(), strategy, NumberUtil.toInteger(stockGlobal.getQte()));
+        return stockService.livraisonStockGlobal(stockGlobal.getReferenceCommande(), stockGlobal.getReferenceProduit(), strategy, NumberUtil.toDouble(stockGlobal.getQte()));
     }
 
     @PutMapping("/update")
@@ -122,11 +122,11 @@ public class StockRest {
         this.stockConverter = stockConverter;
     }
 
-    public AbstractConverter<StockGlobalDTO, StockGlobalVo> getStockGlobalConverter() {
+    public AbstractConverter<StockGlobal, StockGlobalVo> getStockGlobalConverter() {
         return stockGlobalConverter;
     }
 
-    public void setStockGlobalConverter(AbstractConverter<StockGlobalDTO, StockGlobalVo> stockGlobalConverter) {
+    public void setStockGlobalConverter(AbstractConverter<StockGlobal, StockGlobalVo> stockGlobalConverter) {
         this.stockGlobalConverter = stockGlobalConverter;
     }
 

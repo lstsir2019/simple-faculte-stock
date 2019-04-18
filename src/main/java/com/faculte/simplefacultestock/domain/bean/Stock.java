@@ -6,6 +6,7 @@
 package com.faculte.simplefacultestock.domain.bean;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,15 +26,15 @@ public class Stock implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String reference;
+//    private String reference;
     private String referenceReception;
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date dateReception;
     private String referenceCommande;
     private String referenceProduit;
-    private int qte;
-    private int qteDeffectueuse;
-    private int seuilAlert;
+    private Double qte;
+    private Double qteDeffectueuse;
+    private Double seuilAlert;
     @ManyToOne
     private Magasin magasin = new Magasin();
 
@@ -45,13 +46,13 @@ public class Stock implements Serializable {
         this.id = id;
     }
 
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
+//    public String getReference() {
+//        return reference;
+//    }
+//
+//    public void setReference(String reference) {
+//        this.reference = reference;
+//    }
 
     public String getReferenceReception() {
         return referenceReception;
@@ -85,27 +86,27 @@ public class Stock implements Serializable {
         this.referenceProduit = referenceProduit;
     }
 
-    public int getQte() {
+    public Double getQte() {
         return qte;
     }
 
-    public void setQte(int qte) {
+    public void setQte(Double qte) {
         this.qte = qte;
     }
 
-    public int getQteDeffectueuse() {
+    public Double getQteDeffectueuse() {
         return qteDeffectueuse;
     }
 
-    public void setQteDeffectueuse(int qteDeffectueuse) {
+    public void setQteDeffectueuse(Double qteDeffectueuse) {
         this.qteDeffectueuse = qteDeffectueuse;
     }
 
-    public int getSeuilAlert() {
+    public Double getSeuilAlert() {
         return seuilAlert;
     }
 
-    public void setSeuilAlert(int seuilAlert) {
+    public void setSeuilAlert(Double seuilAlert) {
         this.seuilAlert = seuilAlert;
     }
 
@@ -117,7 +118,6 @@ public class Stock implements Serializable {
         this.magasin = magasin;
     }
 
-    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -140,9 +140,7 @@ public class Stock implements Serializable {
 
     @Override
     public String toString() {
-        return "Stock{" + "id=" + id + ", reference=" + reference + ", referenceReception=" + referenceReception + ", referenceProduit=" + referenceProduit + ", qte=" + qte + ", qteDeffectueuse=" + qteDeffectueuse + ", seuilAlert=" + seuilAlert + ", magasin=" + magasin + '}';
+        return "Stock{" + "id=" + id + ", referenceReception=" + referenceReception + ", referenceProduit=" + referenceProduit + ", qte=" + qte + ", qteDeffectueuse=" + qteDeffectueuse + ", seuilAlert=" + seuilAlert + ", magasin=" + magasin + '}';
     }
-
- 
 
 }
