@@ -9,23 +9,23 @@ package com.faculte.simplefacultestock.domain.rest.vo;
  *
  * @author Anas
  */
-public class StockGlobal {
+public class StockGlobalVo {
 
-    private String referenceProduit;
     private String referenceCommande;
+    private String referenceProduit;
     private String referenceMagasin;
     private String qte;
 
-    public StockGlobal() {
+    public StockGlobalVo() {
     }
 
-    public StockGlobal(String referenceCommande, String referenceMagasin, String referenceProduit) {
+    public StockGlobalVo(String referenceCommande, String referenceMagasin, String referenceProduit) {
         this.referenceProduit = referenceProduit;
         this.referenceCommande = referenceCommande;
         this.referenceMagasin = referenceMagasin;
     }
 
-    public StockGlobal(String referenceProduit, String referenceCommande) {
+    public StockGlobalVo(String referenceProduit, String referenceCommande) {
         this.referenceProduit = referenceProduit;
         this.referenceCommande = referenceCommande;
     }
@@ -66,7 +66,5 @@ public class StockGlobal {
     public String toString() {
         return "StockGlobal{" + "referenceProduit=" + referenceProduit + ", referenceCommande=" + referenceCommande + ", referenceMagasin=" + referenceMagasin + ", qte=" + qte + '}';
     }
-
-  
 
 }

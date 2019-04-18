@@ -9,7 +9,8 @@ import com.faculte.simplefacultestock.commun.util.NumberUtil;
 import com.faculte.simplefacultestock.domain.bean.Magasin;
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
-import com.faculte.simplefacultestock.domain.rest.vo.StockGlobal;
+import com.faculte.simplefacultestock.domain.model.service.dto.StockGlobalDTO;
+import com.faculte.simplefacultestock.domain.rest.vo.StockGlobalVo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,16 +19,46 @@ import org.springframework.stereotype.Component;
 
 /**
  *
+ *
  * @author Anas
  */
 @Component
-public class StockGlobalConverter {
+public class StockGlobalConverter implements AbstractConverter<StockGlobalDTO, StockGlobalVo> {
 
     @Autowired
     private StockService stockService;
 
-    public List<StockGlobal> findByCommandeAndProduit(String referenceCommande, String referenceProduit) {
-        List<StockGlobal> globals = new ArrayList<>();
+    @Override
+    public StockGlobalDTO toItem(StockGlobalVo vo) {
+        if (vo == null) {
+            return null;
+        } else {
+            StockGlobalDTO item = new StockGlobalDTO();
+            item.setReferenceCommande(vo.getReferenceCommande());
+            item.setReferenceProduit(vo.getReferenceProduit());
+            item.setReferenceMagasin(vo.getReferenceMagasin());
+            item.setQte(NumberUtil.toLong(vo.getQte()));
+            return item;
+        }
+    }
+
+    @Override
+    public StockGlobalVo toVo(StockGlobalDTO item) {
+        if (item == null) {
+            return null;
+        } else {
+            StockGlobalVo vo = new StockGlobalVo();
+            vo.setReferenceCommande(item.getReferenceCommande());
+            vo.setReferenceProduit(item.getReferenceProduit());
+            vo.setReferenceMagasin(item.getReferenceMagasin());
+            vo.setQte(item.getQte() + "");
+            return vo;
+        }
+    }
+
+    /*
+    public List<StockGlobalVo> findByCommandeAndProduit(String referenceCommande, String referenceProduit) {
+        List<StockGlobalVo> globals = new ArrayList<>();
         List<Stock> stocks = stockService.findStocksByCommandeAndProduit(referenceCommande, referenceProduit);
         List<Magasin> magasins = getMagasinsFromList(stocks);
         for (Magasin magasin : magasins) {
@@ -37,8 +68,8 @@ public class StockGlobalConverter {
         return globals;
     }
 
-    private StockGlobal listStocksToStockGlobal(String referenceMagasin, String referenceCommande, String referenceProduit, Integer qte) {
-        StockGlobal global = new StockGlobal();
+    private StockGlobalVo listStocksToStockGlobal(String referenceMagasin, String referenceCommande, String referenceProduit, Integer qte) {
+        StockGlobalVo global = new StockGlobalVo();
         global.setQte(NumberUtil.toString(qte));
         global.setReferenceCommande(referenceCommande);
         global.setReferenceMagasin(referenceMagasin);
@@ -97,4 +128,5 @@ public class StockGlobalConverter {
         }
         return true;
     }
+     */
 }

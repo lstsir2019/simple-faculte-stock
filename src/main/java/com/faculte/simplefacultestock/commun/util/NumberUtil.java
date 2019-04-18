@@ -31,7 +31,23 @@ public class NumberUtil {
         if (value == null || value.isEmpty()) {
             return 0;
         } else {
-            return Integer.parseInt(value);
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+    }
+
+    public static Long toLong(String value) {
+        if (value == null || value.isEmpty()) {
+            return 0L;
+        } else {
+            try {
+                return Long.parseLong(value);
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
     }
 

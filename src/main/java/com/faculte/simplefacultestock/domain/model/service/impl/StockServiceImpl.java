@@ -5,17 +5,19 @@
  */
 package com.faculte.simplefacultestock.domain.model.service.impl;
 
+import com.faculte.simplefacultestock.commun.util.SearchUtil;
 import com.faculte.simplefacultestock.domain.bean.Magasin;
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.model.dao.StockDao;
-import com.faculte.simplefacultestock.domain.model.dao.StockSearch;
 import com.faculte.simplefacultestock.domain.model.service.MagasinService;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
-import java.lang.reflect.Array;
+import com.faculte.simplefacultestock.domain.model.service.dto.StockGlobalDTO;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +33,9 @@ public class StockServiceImpl implements StockService {
     private StockDao stockDao;
     @Autowired
     private MagasinService magasinService;
-    @Autowired
-    private StockSearch stockSearch;
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Override
     public int create(Stock stock) {
         int res = valideStock(stock);
@@ -59,7 +62,15 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public List<Stock> findByCriteria(String reception, String commande, Date dateMin, Date dateMax) {
-        return stockSearch.findByCriteria(reception, commande, dateMin, dateMax);
+        return entityManager.createQuery(findByCriteriaCreateQuery(reception, commande, dateMin, dateMax)).getResultList();
+    }
+
+    private String findByCriteriaCreateQuery(String reception, String commande, Date dateMin, Date dateMax) {
+        String query = "SELECT s FROM Stock s where 1=1 ";
+        query += SearchUtil.addConstraint("s", "referenceReception", "LIKE", reception);
+        query += SearchUtil.addConstraint("s", "referenceCommande", "LIKE", commande);
+        query += SearchUtil.addConstraintMinMaxDate("s", "dateReception", dateMin, dateMax);
+        return query;
     }
 
     private int valideStock(Stock stock) {
@@ -164,9 +175,11 @@ public class StockServiceImpl implements StockService {
         } else if (stock.getSeuilAlert() < 0) {
             return -3;
         } else {
-            stock.setQteDeffectueuse(stock.getQteDeffectueuse());
-            stock.setSeuilAlert(stock.getSeuilAlert());
-            stockDao.save(stock);
+            Stock s = stockDao.getOne(stock.getId());
+            //Magasin magasin= magasinService.findByReference(stock.getMagasin().getReference());
+            s.setQteDeffectueuse(stock.getQteDeffectueuse());
+            s.setSeuilAlert(stock.getSeuilAlert());
+            stockDao.save(s);
             return 1;
         }
     }
@@ -202,10 +215,19 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    public List<StockGlobalDTO> findAllStockGlobal() {
+        return stockDao.findAllByCommande();
+    }
+
+    @Override
+    public List<StockGlobalDTO> findStockGlobalByCommandeAndProduit(String refCommande, String refProduit) {
+        return stockDao.findStockGlobalByCommandeAndProduit(refCommande, refProduit);
+    }
+
+    @Override
     public int getStockBilan(String refCommande, String refProduit) {
         return qteTotal(findStocksByCommandeAndProduit(refCommande, refProduit));
     }
-    
 
     private int qteTotal(List<Stock> stocks) {
         return stocks.stream()

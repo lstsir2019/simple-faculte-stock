@@ -8,13 +8,14 @@ package com.faculte.simplefacultestock.domain.rest;
 import com.faculte.simplefacultestock.commun.util.DateUtil;
 import com.faculte.simplefacultestock.commun.util.NumberUtil;
 import com.faculte.simplefacultestock.domain.bean.Stock;
+import com.faculte.simplefacultestock.domain.model.dao.StockDao;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
+import com.faculte.simplefacultestock.domain.model.service.dto.StockGlobalDTO;
 import com.faculte.simplefacultestock.domain.rest.converter.AbstractConverter;
 import com.faculte.simplefacultestock.domain.rest.converter.StockConverter;
 import com.faculte.simplefacultestock.domain.rest.converter.StockGlobalConverter;
-import com.faculte.simplefacultestock.domain.rest.vo.StockGlobal;
+import com.faculte.simplefacultestock.domain.rest.vo.StockGlobalVo;
 import com.faculte.simplefacultestock.domain.rest.vo.StockVo;
-import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,7 +43,8 @@ public class StockRest {
     @Qualifier("stockConverter")
     private AbstractConverter<Stock, StockVo> stockConverter;
     @Autowired
-    private StockGlobalConverter converter;
+    @Qualifier("stockGlobalConverter")
+    private AbstractConverter<StockGlobalDTO, StockGlobalVo> stockGlobalConverter;
 
     public int create(Stock stock) {
         return stockService.create(stock);
@@ -59,7 +61,12 @@ public class StockRest {
         return stockConverter.toVo(stockService.findStocksByMagasinAndCommandeAndProduit(refMagasin, refCommande, refProduit));
     }
 
-    @GetMapping("/search")
+    @GetMapping("/")
+    public List<StockVo> findAll() {
+        return stockConverter.toVo(stockService.findAll());
+    }
+
+    @PostMapping("/search")
     public List<StockVo> findByCriteria(@RequestBody StockVo stockVo) {
         return stockConverter.toVo(stockService.findByCriteria(stockVo.getReferenceReception(), stockVo.getReferenceCommande(), DateUtil.parseDate(stockVo.getDateMin()), DateUtil.parseDate(stockVo.getDateMax())));
     }
@@ -70,10 +77,18 @@ public class StockRest {
         return stockService.LivraisonStockUnique(stock.getReferenceReception(), stock.getMagasin().getReference(), stock.getReferenceProduit(), stock.getQte());
     }
 
+    //StockGlobal
     @GetMapping("/commande/{refcommande}/produit/{refproduit}")
-    public List<StockGlobal> findByCommandeAndProduit(@PathVariable String refcommande, @PathVariable String refproduit) {
+    public List<StockGlobalVo> findByCommandeAndProduit(@PathVariable String refcommande, @PathVariable String refproduit) {
         System.out.println(refcommande + " , " + refproduit);
-        return converter.findByCommandeAndProduit(refcommande, refproduit);
+        return stockGlobalConverter.toVo(stockService.findStockGlobalByCommandeAndProduit(refcommande, refproduit));
+        // return converter.findByCommandeAndProduit(refcommande, refproduit);
+    }
+
+    //StockGlobal
+    @GetMapping("/stockglobal")
+    public List<StockGlobalVo> findAllByCommande() {
+        return stockGlobalConverter.toVo(stockService.findAllStockGlobal());
     }
 
     @GetMapping("/commande/{refcommande}/produit/{refproduit}/strategy/{strategy}")
@@ -82,13 +97,8 @@ public class StockRest {
     }
 
     @PutMapping("/stockglobal/strategy/{strategy}")
-    public int livraisonStockGlobal(@RequestBody StockGlobal stockGlobal, @PathVariable String strategy) {
+    public int livraisonStockGlobal(@RequestBody StockGlobalVo stockGlobal, @PathVariable String strategy) {
         return stockService.livraisonStockGlobal(stockGlobal.getReferenceCommande(), stockGlobal.getReferenceProduit(), strategy, NumberUtil.toInteger(stockGlobal.getQte()));
-    }
-
-    @GetMapping("/")
-    public List<StockVo> findAll() {
-        return stockConverter.toVo(stockService.findAll());
     }
 
     @PutMapping("/update")
@@ -112,12 +122,12 @@ public class StockRest {
         this.stockConverter = stockConverter;
     }
 
-    public StockGlobalConverter getConverter() {
-        return converter;
+    public AbstractConverter<StockGlobalDTO, StockGlobalVo> getStockGlobalConverter() {
+        return stockGlobalConverter;
     }
 
-    public void setConverter(StockGlobalConverter converter) {
-        this.converter = converter;
+    public void setStockGlobalConverter(AbstractConverter<StockGlobalDTO, StockGlobalVo> stockGlobalConverter) {
+        this.stockGlobalConverter = stockGlobalConverter;
     }
 
 }

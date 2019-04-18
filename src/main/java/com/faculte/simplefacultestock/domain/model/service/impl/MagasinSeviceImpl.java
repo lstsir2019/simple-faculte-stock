@@ -5,10 +5,10 @@
  */
 package com.faculte.simplefacultestock.domain.model.service.impl;
 
-
 import com.faculte.simplefacultestock.domain.bean.Magasin;
 import com.faculte.simplefacultestock.domain.model.dao.MagasinDao;
 import com.faculte.simplefacultestock.domain.model.service.MagasinService;
+import com.faculte.simplefacultestock.domain.rest.vo.MagasinVo;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +35,19 @@ public class MagasinSeviceImpl implements MagasinService {
     }
 
     @Override
+    public Magasin update(Magasin magasin) {
+        if (magasin != null) {
+            Magasin m = findByReference(magasin.getReference());
+            if (m != null) {
+                magasin.setId(m.getId());
+                magasinDao.save(magasin);
+                return magasin;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public Magasin findByReference(String reference) {
         return magasinDao.findByReference(reference);
     }
@@ -43,9 +56,7 @@ public class MagasinSeviceImpl implements MagasinService {
     public List<Magasin> findAll() {
         return magasinDao.findAll();
     }
-    
-    
-    
+
     public MagasinDao getMagasinDao() {
         return magasinDao;
     }
@@ -53,4 +64,5 @@ public class MagasinSeviceImpl implements MagasinService {
     public void setMagasinDao(MagasinDao magasinDao) {
         this.magasinDao = magasinDao;
     }
+
 }

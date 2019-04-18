@@ -6,6 +6,7 @@
 package com.faculte.simplefacultestock.domain.model.service;
 
 import com.faculte.simplefacultestock.domain.bean.Stock;
+import com.faculte.simplefacultestock.domain.model.service.dto.StockGlobalDTO;
 import java.util.Date;
 import java.util.List;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,13 +21,17 @@ public interface StockService {
 
     public int create(List<Stock> stocks);
 
+    public List<StockGlobalDTO> findStockGlobalByCommandeAndProduit(String refCommande, String refProduit);
+
+    public List<StockGlobalDTO> findAllStockGlobal();
+
     public List<Stock> findAll();
 
     public int LivraisonStockUnique(String refReception, String refMagasin, String refProduit, Integer qteLivre);
 //    public int stockReception(String refMagasin, String refProduit, Integer newQte);
 
     public List<Stock> findByCriteria(String reception, String commande, Date dateMin, Date dateMax);
-    
+
     public int stockDefected(Stock stock);
 
     public int livraisonStockGlobal(String refcommande, String refProduit, String strategy, Integer qteLivre);

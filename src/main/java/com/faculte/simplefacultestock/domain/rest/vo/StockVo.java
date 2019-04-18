@@ -11,6 +11,7 @@ package com.faculte.simplefacultestock.domain.rest.vo;
  */
 public class StockVo {
 
+    private String id;
     private String reference;
     private String referenceReception;
     private String referenceProduit;
@@ -112,6 +113,14 @@ public class StockVo {
 
     public void setMagasinVo(MagasinVo magasinVo) {
         this.magasinVo = magasinVo;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

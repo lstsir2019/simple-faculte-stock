@@ -6,6 +6,7 @@
 package com.faculte.simplefacultestock.domain.model.service;
 
 import com.faculte.simplefacultestock.domain.bean.Magasin;
+import com.faculte.simplefacultestock.domain.rest.vo.MagasinVo;
 
 import java.util.List;
 
@@ -20,5 +21,7 @@ public interface MagasinService {
     public List<Magasin> findAll();
         
     public Magasin findByReference(String reference);
+
+    public Magasin update(Magasin toItem);
 
 }
