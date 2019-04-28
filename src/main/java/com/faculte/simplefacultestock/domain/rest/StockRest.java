@@ -8,18 +8,17 @@ package com.faculte.simplefacultestock.domain.rest;
 import com.faculte.simplefacultestock.commun.util.DateUtil;
 import com.faculte.simplefacultestock.commun.util.NumberUtil;
 import com.faculte.simplefacultestock.domain.bean.Stock;
-import com.faculte.simplefacultestock.domain.model.dao.StockDao;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
 import com.faculte.simplefacultestock.domain.rest.vo.StockGlobal;
 import com.faculte.simplefacultestock.domain.rest.converter.AbstractConverter;
 import com.faculte.simplefacultestock.domain.rest.converter.StockConverter;
-import com.faculte.simplefacultestock.domain.rest.converter.StockGlobalConverter;
 import com.faculte.simplefacultestock.domain.rest.vo.StockGlobalVo;
 import com.faculte.simplefacultestock.domain.rest.vo.StockVo;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,9 +49,14 @@ public class StockRest {
         return stockService.create(stock);
     }
 
+//    @PostMapping("/")
+//    public int create(@RequestBody List<StockVo> stocks) {
+//        int res = stockService.create(stockConverter.toItem(stocks));
+//        return res;
+//    }
     @PostMapping("/")
-    public int create(@RequestBody List<StockVo> stocks) {
-        int res = stockService.create(stockConverter.toItem(stocks));
+    public int create(@RequestBody StockVo stock) {
+        int res = stockService.create(stockConverter.toItem(stock));
         return res;
     }
 
@@ -104,6 +108,11 @@ public class StockRest {
     @PutMapping("/update")
     public int stockDefected(@RequestBody Stock stock) {
         return stockService.stockDefected(stock);
+    }
+
+    @DeleteMapping("/commande/{referencecommande}/reception/{referencereception}")
+    public void deleteByReferenceCommandeAndReception(@PathVariable String referencecommande, @PathVariable String referencereception) {
+        stockService.deleteByReferenceCommandeAndReception(referencecommande, referencereception);
     }
 
     public StockService getStockService() {

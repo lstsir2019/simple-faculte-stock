@@ -7,10 +7,8 @@ package com.faculte.simplefacultestock.domain.model.service;
 
 import com.faculte.simplefacultestock.domain.bean.Stock;
 import com.faculte.simplefacultestock.domain.rest.vo.StockGlobal;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  *
@@ -20,8 +18,9 @@ public interface StockService {
 
     public int create(Stock stock);
 
-    public int create(List<Stock> stocks);
+    public void deleteByReferenceCommandeAndReception(String referenceCommande, String referenceReception);
 
+    /*    public int create(List<Stock> stocks);*/
     public List<StockGlobal> findStockGlobalByCommandeAndProduit(String refCommande, String refProduit);
 
     public List<StockGlobal> findAllStockGlobal();
@@ -44,7 +43,6 @@ public interface StockService {
     public List<Stock> findStocksByCommandeAndProduit(String refCommande, String refProduit);
 
 //    public Stock findByReference(String codeStock);
-
     public List<Stock> findStocksByCommandeAndProduitAndStrategy(String refcommande, String refProduit, String strategy);
 
     public Double getStockBilan(String refCommande, String refProduit);

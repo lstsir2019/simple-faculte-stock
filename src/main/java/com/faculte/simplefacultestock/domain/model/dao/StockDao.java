@@ -29,7 +29,8 @@ public interface StockDao extends JpaRepository<Stock, Long> {
     @Query(QUERY_ONE_STOCK_GLOBAL)
     public List<StockGlobal> findStockGlobalByCommandeAndProduit(String refCommande, String refProduit);
 
-   // public Stock findByReference(String reference);
+    // public Stock findByReference(String reference);
+    public List<Stock> findByReferenceCommandeAndReferenceReception(String refCommande, String refReception);
 
     public List<Stock> findByMagasinReferenceAndReferenceCommandeAndReferenceProduit(String refMagasin, String refCommande, String refProduit);
 

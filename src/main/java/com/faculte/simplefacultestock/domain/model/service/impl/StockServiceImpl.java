@@ -12,7 +12,6 @@ import com.faculte.simplefacultestock.domain.model.dao.StockDao;
 import com.faculte.simplefacultestock.domain.model.service.MagasinService;
 import com.faculte.simplefacultestock.domain.model.service.StockService;
 import com.faculte.simplefacultestock.domain.rest.vo.StockGlobal;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,38 +39,10 @@ public class StockServiceImpl implements StockService {
     @Override
     public int create(Stock stock) {
         int res = valideStock(stock);
-        if (valideStock(stock) > 0) {
+        if (res > 0) {
             stockDao.save(stock);
         }
         return res;
-    }
-
-    @Override
-    public int create(List<Stock> stocks) {
-        if (!valideListStocks(stocks)) {
-            return -1;
-        } else {
-            stockDao.saveAll(stocks);
-            return 1;
-        }
-    }
-
-    @Override
-    public List<Stock> findAll() {
-        return stockDao.findAll();
-    }
-
-    @Override
-    public List<Stock> findByCriteria(String reception, String commande, Date dateMin, Date dateMax) {
-        return entityManager.createQuery(constructQuery(reception, commande, dateMin, dateMax)).getResultList();
-    }
-
-    private String constructQuery(String reception, String commande, Date dateMin, Date dateMax) {
-        String query = "SELECT s FROM Stock s where 1=1 ";
-        query += SearchUtil.addConstraint("s", "referenceReception", "LIKE", reception);
-        query += SearchUtil.addConstraint("s", "referenceCommande", "LIKE", commande);
-        query += SearchUtil.addConstraintMinMaxDate("s", "dateReception", dateMin, dateMax);
-        return query;
     }
 
     private int valideStock(Stock stock) {
@@ -94,6 +65,57 @@ public class StockServiceImpl implements StockService {
         }
     }
 
+    @Override
+    public void deleteByReferenceCommandeAndReception(String referenceCommande, String referenceReception) {
+        List<Stock> stocks = findByReferenceCommandeAndReferenceReception(referenceCommande, referenceReception);
+        stocks.forEach(s -> stockDao.delete(s));
+    }
+
+    public List<Stock> findByReferenceCommandeAndReferenceReception(String refCommande, String refReception) {
+        return stockDao.findByReferenceCommandeAndReferenceReception(refCommande, refReception);
+    }
+
+    /*  @Override
+    public int delete(Stock stock) {
+        if (stock == null) {
+            return -1;
+        } else if (stock.getReferenceProduit() == null || stock.getReferenceProduit().isEmpty()) {
+            return -2;
+        } else if (stock.getReferenceReception() == null || stock.getReferenceReception().isEmpty()) {
+            return -3;
+        } else {
+            List<Stock> stocks = findStocksByMagasinAndReceptionAndProduit(stock.getMagasin().getReference(), stock.getReferenceReception(), stock.getReferenceProduit());
+            
+        }
+    }
+
+    @Override
+    public int create(List<Stock> stocks) {
+        if (!valideListStocks(stocks)) {
+            return -1;
+        } else {
+            stockDao.saveAll(stocks);
+            return 1;
+        }
+    }*/
+    @Override
+    public List<Stock> findAll() {
+        return stockDao.findAll();
+    }
+
+    @Override
+    public List<Stock> findByCriteria(String reception, String commande, Date dateMin, Date dateMax) {
+        return entityManager.createQuery(constructQuery(reception, commande, dateMin, dateMax)).getResultList();
+    }
+
+    private String constructQuery(String reception, String commande, Date dateMin, Date dateMax) {
+        String query = "SELECT s FROM Stock s where 1=1 ";
+        query += SearchUtil.addConstraint("s", "referenceReception", "LIKE", reception);
+        query += SearchUtil.addConstraint("s", "referenceCommande", "LIKE", commande);
+        query += SearchUtil.addConstraintMinMaxDate("s", "dateReception", dateMin, dateMax);
+        return query;
+    }
+
     private boolean valideListStocks(List<Stock> stocks) {
         //Methode qui permet de Valide
         //Si La Liste des Stock peut s'enregister au BD 
@@ -109,7 +131,6 @@ public class StockServiceImpl implements StockService {
 //    public Stock findByReference(String reference) {
 //        return stockDao.findByReference(reference);
 //    }
-
     @Override
     public List<Stock> findStocksByCommandeAndProduit(String refCommande, String refProduit) {
         return stockDao.findByReferenceCommandeAndReferenceProduit(refCommande, refProduit);
