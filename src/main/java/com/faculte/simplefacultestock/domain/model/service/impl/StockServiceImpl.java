@@ -37,6 +37,19 @@ public class StockServiceImpl implements StockService {
     private EntityManager entityManager;
 
     @Override
+    public List<Stock> findByCriteria(String reception, String commande, Date dateMin, Date dateMax) {
+        return entityManager.createQuery(constructQuery(reception, commande, dateMin, dateMax)).getResultList();
+    }
+
+    private String constructQuery(String reception, String commande, Date dateMin, Date dateMax) {
+        String query = "SELECT s FROM Stock s where 1=1 ";
+        query += SearchUtil.addConstraint("s", "referenceReception", "LIKE", reception);
+        query += SearchUtil.addConstraint("s", "referenceCommande", "LIKE", commande);
+        query += SearchUtil.addConstraintMinMaxDate("s", "dateReception", dateMin, dateMax);
+        return query;
+    }
+
+    @Override
     public int create(Stock stock) {
         int res = valideStock(stock);
         if (res > 0) {
@@ -75,44 +88,23 @@ public class StockServiceImpl implements StockService {
         return stockDao.findByReferenceCommandeAndReferenceReception(refCommande, refReception);
     }
 
-    /*  @Override
-    public int delete(Stock stock) {
-        if (stock == null) {
-            return -1;
-        } else if (stock.getReferenceProduit() == null || stock.getReferenceProduit().isEmpty()) {
-            return -2;
-        } else if (stock.getReferenceReception() == null || stock.getReferenceReception().isEmpty()) {
-            return -3;
-        } else {
-            List<Stock> stocks = findStocksByMagasinAndReceptionAndProduit(stock.getMagasin().getReference(), stock.getReferenceReception(), stock.getReferenceProduit());
-            
-        }
-    }
-
-    @Override
-    public int create(List<Stock> stocks) {
-        if (!valideListStocks(stocks)) {
-            return -1;
-        } else {
-            stockDao.saveAll(stocks);
-            return 1;
-        }
-    }*/
     @Override
     public List<Stock> findAll() {
         return stockDao.findAll();
     }
 
     @Override
-    public List<Stock> findByCriteria(String reception, String commande, Date dateMin, Date dateMax) {
-        return entityManager.createQuery(constructQuery(reception, commande, dateMin, dateMax)).getResultList();
+    public List<StockGlobal> findStockGlobalByCriteria(StockGlobal stockGlobal) {
+        return entityManager.createQuery(constructQueryForStockGlobal(stockGlobal)).getResultList();
     }
 
-    private String constructQuery(String reception, String commande, Date dateMin, Date dateMax) {
-        String query = "SELECT s FROM Stock s where 1=1 ";
-        query += SearchUtil.addConstraint("s", "referenceReception", "LIKE", reception);
-        query += SearchUtil.addConstraint("s", "referenceCommande", "LIKE", commande);
-        query += SearchUtil.addConstraintMinMaxDate("s", "dateReception", dateMin, dateMax);
+    private String constructQueryForStockGlobal(StockGlobal global) {
+        String query = "SELECT NEW com.faculte.simplefacultestock.domain.rest.vo.StockGlobal(s.referenceCommande,s.referenceProduit,s.magasin.reference,SUM(s.qte)) FROM Stock s WHERE 1=1";
+        query += SearchUtil.addConstraint("s", "referenceProduit", "LIKE", global.getReferenceProduit());
+        query += SearchUtil.addConstraint("s", "referenceCommande", "LIKE", global.getReferenceCommande());
+        query += SearchUtil.addConstraint("s", "magasin.reference", "LIKE", global.getReferenceMagasin());
+//        query += SearchUtil.addConstraintMinMaxDate("s", "dateReception", dateMin, dateMax);
+        query += " GROUP BY s.magasin.reference ";
         return query;
     }
 
@@ -127,10 +119,6 @@ public class StockServiceImpl implements StockService {
         return (res == stocks.size());
     }
 
-//    @Override
-//    public Stock findByReference(String reference) {
-//        return stockDao.findByReference(reference);
-//    }
     @Override
     public List<Stock> findStocksByCommandeAndProduit(String refCommande, String refProduit) {
         return stockDao.findByReferenceCommandeAndReferenceProduit(refCommande, refProduit);
@@ -192,17 +180,23 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public int stockDefected(Stock stock) {
-        if (stock.getQte() < stock.getQteDeffectueuse() || stock.getQteDeffectueuse() < 0) {
+        if (stock.getQteDeffectueuse() < 0) {
             return -2;
         } else if (stock.getSeuilAlert() < 0) {
             return -3;
         } else {
             Stock s = stockDao.getOne(stock.getId());
-            //Magasin magasin= magasinService.findByReference(stock.getMagasin().getReference());
-            s.setQteDeffectueuse(stock.getQteDeffectueuse());
-            s.setSeuilAlert(stock.getSeuilAlert());
-            stockDao.save(s);
-            return 1;
+            if (s == null) {
+                return -1;
+            } else if (s.getQte() < (stock.getQteDeffectueuse() - s.getQteDeffectueuse())) {
+                return -2;
+            } else {
+                s.setQte(s.getQte() - (stock.getQteDeffectueuse() - s.getQteDeffectueuse()));
+                s.setQteDeffectueuse(stock.getQteDeffectueuse());
+                s.setSeuilAlert(stock.getSeuilAlert());
+                stockDao.save(s);
+                return 1;
+            }
         }
     }
 
@@ -234,6 +228,19 @@ public class StockServiceImpl implements StockService {
             takingFromStocks(stocks, qteLivre);
             return 1;
         }
+    }
+
+    public int decrementStockGlobal(Stock stock, Double qteAnnule) {
+        Stock s = new Stock();
+        s.setDateReception(new Date());
+        s.setReferenceCommande(stock.getReferenceCommande());
+        Magasin m = magasinService.findByReference(stock.getMagasin().getReference());
+        s.setMagasin(m);
+        s.setReferenceProduit(stock.getReferenceReception());
+        s.setQte(qteAnnule);
+        s.setReferenceReception(stock.getReferenceReception());
+        stockDao.save(stock);
+        return 1;
     }
 
     @Override

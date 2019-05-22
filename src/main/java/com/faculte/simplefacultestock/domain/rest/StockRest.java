@@ -89,7 +89,12 @@ public class StockRest {
         // return converter.findByCommandeAndProduit(refcommande, refproduit);
     }
 
-    //StockGlobal
+    //StockGlobal dont switch to GetMapping (Angular) 
+    @PostMapping("/stockglobal")
+    public List<StockGlobalVo> findStocksByReceptionAndProduitAndStrategy(@RequestBody StockGlobal stockGlobal) {
+        return stockGlobalConverter.toVo(stockService.findStockGlobalByCriteria(stockGlobal));
+    }
+
     @GetMapping("/stockglobal")
     public List<StockGlobalVo> findAllByCommande() {
         return stockGlobalConverter.toVo(stockService.findAllStockGlobal());

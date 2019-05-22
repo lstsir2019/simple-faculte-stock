@@ -46,4 +46,6 @@ public interface StockService {
     public List<Stock> findStocksByCommandeAndProduitAndStrategy(String refcommande, String refProduit, String strategy);
 
     public Double getStockBilan(String refCommande, String refProduit);
+
+    public List<StockGlobal> findStockGlobalByCriteria(StockGlobal stockGlobal);
 }
