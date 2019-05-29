@@ -104,7 +104,7 @@ public class StockServiceImpl implements StockService {
         query += SearchUtil.addConstraint("s", "referenceCommande", "LIKE", global.getReferenceCommande());
         query += SearchUtil.addConstraint("s", "magasin.reference", "LIKE", global.getReferenceMagasin());
 //        query += SearchUtil.addConstraintMinMaxDate("s", "dateReception", dateMin, dateMax);
-        query += " GROUP BY s.magasin.reference ";
+        query += " GROUP BY s.referenceCommande,s.referenceProduit,s.magasin.reference ";
         return query;
     }
 
